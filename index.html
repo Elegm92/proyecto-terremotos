@@ -1,11 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <title>Terremotos</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="icon" type="image/x-icon" href="./assets/terremoto.png" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Mapa de terremotos</h1>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <section>
+          <div id="map"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="./js/scripts.js"></script>
+  </body>
 </html>
