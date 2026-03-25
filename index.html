@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -14,23 +15,128 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
+
     <title>Terremotos</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="icon" type="image/x-icon" href="./assets/terremoto.png" />
   </head>
+
   <body>
     <header>
-      <div class="container">
+      <div class="contenedor">
         <h1>Mapa de terremotos</h1>
       </div>
     </header>
 
-    <main>
-      <div class="container">
-        <section>
-          <div id="map"></div>
+    <main class="contenedor diseno-aplicacion">
+      <aside class="barra-lateral">
+        <section class="panel seccion-usuario">
+          <h2>Usuario</h2>
+
+          <div class="bloque-usuario">
+            <h3>Registro</h3>
+            <form id="register-form">
+              <div class="grupo-formulario">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" name="register-email" />
+              </div>
+
+              <div class="grupo-formulario">
+                <label for="register-password">Contraseña</label>
+                <input type="password" id="register-password" name="register-password" />
+              </div>
+
+              <button type="submit">Registrarse</button>
+            </form>
+          </div>
+
+          <div class="bloque-usuario">
+            <h3>Login</h3>
+            <form id="login-form">
+              <div class="grupo-formulario">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" name="login-email" />
+              </div>
+
+              <div class="grupo-formulario">
+                <label for="login-password">Contraseña</label>
+                <input type="password" id="login-password" name="login-password" />
+              </div>
+
+              <button type="submit">Iniciar sesión</button>
+            </form>
+          </div>
+
+          <div class="bloque-usuario" id="user-info">
+            <h3>Estado</h3>
+            <p>No hay usuario conectado</p>
+          </div>
         </section>
-      </div>
+
+        <section class="panel seccion-favoritos">
+          <h2>Favoritos</h2>
+
+          <div class="grupo-botones">
+            <button type="button" id="show-api">Mostrar terremotos</button>
+            <button type="button" id="show-favorites">Mostrar favoritos</button>
+          </div>
+
+          <div class="contenedor-favoritos">
+            <ul id="favorites-list">
+              <li>No hay favoritos guardados</li>
+            </ul>
+          </div>
+        </section>
+      </aside>
+
+      <section class="contenido-principal">
+        <article class="tarjeta-mapa">
+          <h2>Mapa General</h2>
+          <div id="map"></div>
+        </article>
+
+        <article class="tarjeta-mapa">
+          <h2>Mapa Filtrado</h2>
+
+          <form id="filter-form">
+            <div class="grupo-formulario">
+              <label for="min-magnitude">Magnitud mínima</label>
+              <input
+                type="number"
+                id="min-magnitude"
+                name="min-magnitude"
+                min="0"
+                step="0.1"
+              />
+            </div>
+
+            <div class="grupo-formulario">
+              <label for="max-magnitude">Magnitud máxima</label>
+              <input
+                type="number"
+                id="max-magnitude"
+                name="max-magnitude"
+                min="0"
+                step="0.1"
+              />
+            </div>
+
+            <div class="grupo-formulario">
+              <label for="start-date">Fecha de inicio</label>
+              <input type="date" id="start-date" name="start-date" />
+            </div>
+
+            <div class="grupo-formulario">
+              <label for="end-date">Fecha de fin</label>
+              <input type="date" id="end-date" name="end-date" />
+            </div>
+
+            <button type="submit">Filtrar</button>
+          </form>
+
+          <div id="filtered-map"></div>
+        </article>
+      </section>
     </main>
 
     <script src="./js/scripts.js"></script>
