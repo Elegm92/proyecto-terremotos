@@ -108,12 +108,12 @@ Formato de datos: GeoJSON
 
 ### Página principal
 
-![Página principal](./assets/)
+![Página principal](./assets/usuario.png)
 
 
-### Tabla
+### Mapa
 
-![Galería](./assets/)
+![Galería](./assets/filtro-map.png)
 
 
 ---

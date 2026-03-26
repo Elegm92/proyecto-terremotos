@@ -4,147 +4,121 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Leaflet -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
     />
-    <script
-      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-      crossorigin=""
-    ></script>
 
-    <title>Terremotos</title>
+    <title>Mapa de terremotos</title>
     <link rel="stylesheet" href="./styles.css" />
-    <link rel="icon" type="image/x-icon" href="./assets/terremoto.png" />
   </head>
 
   <body>
     <header>
-      <div class="contenedor">
-        <h1>Mapa de terremotos</h1>
-      </div>
+      <h1>Mapa de terremotos</h1>
     </header>
 
-    <main class="contenedor diseno-aplicacion">
-      <aside class="barra-lateral">
-        <section class="panel seccion-usuario">
-          <h2>Usuario</h2>
+    <main>
+      <!-- USUARIO -->
+      <section>
+        <h2>Usuario</h2>
 
-          <div class="bloque-usuario">
-            <h3>Registro</h3>
-            <form id="register-form">
-              <div class="grupo-formulario">
-                <label>Email</label>
-                <input type="email" id="register-email" required />
-              </div>
+        <div>
+          <h3>Registro</h3>
+          <form id="register-form">
+            <label>Email</label>
+            <input type="email" id="register-email" required />
 
-              <div class="grupo-formulario">
-                <label>Contraseña</label>
-                <input type="password" id="register-password" required />
-              </div>
+            <label>Contraseña</label>
+            <input type="password" id="register-password" required />
 
-              <button type="submit">Registrarse</button>
-            </form>
-          </div>
+            <label>Repetir contraseña</label>
+            <input type="password" id="register-password-repeat" required />
 
-          <div class="bloque-usuario">
-            <h3>Login</h3>
-            <form id="login-form">
-              <div class="grupo-formulario">
-                <label>Email</label>
-                <input type="email" id="login-email" required />
-              </div>
-
-              <div class="grupo-formulario">
-                <label>Contraseña</label>
-                <input type="password" id="login-password" required />
-              </div>
-
-              <button type="submit">Iniciar sesión</button>
-            </form>
-          </div>
-
-          <div class="bloque-usuario" id="user-info">
-            <h3>Estado</h3>
-            <p>No hay usuario conectado</p>
-            <button id="logout-btn" type="button">Cerrar sesión</button>
-          </div>
-        </section>
-
-        <section class="panel seccion-favoritos">
-          <h2>Favoritos</h2>
-
-          <div class="grupo-botones">
-            <button type="button" id="show-api">Mostrar terremotos</button>
-            <button type="button" id="show-favorites">Mostrar favoritos</button>
-          </div>
-
-          <div class="contenedor-favoritos">
-            <ul id="favorites-list">
-              <li>No hay favoritos guardados</li>
-            </ul>
-          </div>
-        </section>
-      </aside>
-
-      <section class="contenido-principal">
-        <article class="tarjeta-mapa">
-          <h2>Mapa General</h2>
-          <div id="map"></div>
-        </article>
-
-        <article class="tarjeta-mapa">
-          <h2>Mapa Filtrado</h2>
-
-          <form id="filter-form">
-            <div class="grupo-formulario">
-              <label for="min-magnitude">Magnitud mínima</label>
-              <input
-                type="number"
-                id="min-magnitude"
-                name="min-magnitude"
-                min="0"
-                step="0.1"
-              />
-            </div>
-
-            <div class="grupo-formulario">
-              <label for="max-magnitude">Magnitud máxima</label>
-              <input
-                type="number"
-                id="max-magnitude"
-                name="max-magnitude"
-                min="0"
-                step="0.1"
-              />
-            </div>
-
-            <div class="grupo-formulario">
-              <label for="start-date">Fecha de inicio</label>
-              <input type="date" id="start-date" name="start-date" />
-            </div>
-
-            <div class="grupo-formulario">
-              <label for="end-date">Fecha de fin</label>
-              <input type="date" id="end-date" name="end-date" />
-            </div>
-
-            <button type="submit" id="filter-btn">Filtrar</button>
+            <button type="submit">Registrarse</button>
           </form>
+        </div>
 
-          <div id="filtered-map"></div>
-        </article>
+        <div>
+          <h3>Login</h3>
+          <form id="login-form">
+            <label>Email</label>
+            <input type="email" id="login-email" required />
+
+            <label>Contraseña</label>
+            <input type="password" id="login-password" required />
+
+            <button type="submit">Iniciar sesión</button>
+          </form>
+        </div>
+
+        <div id="user-info">
+          <h3>Estado</h3>
+          <p>No hay usuario conectado</p>
+        </div>
+      </section>
+
+      <!-- BOTONES -->
+      <section>
+        <h2>Opciones</h2>
+        <button id="show-api">Mostrar terremotos</button>
+        <button id="show-favorites">Mostrar favoritos</button>
+      </section>
+
+      <!-- MAPA GENERAL -->
+      <section>
+        <h2>Mapa general</h2>
+        <div id="map"></div>
+      </section>
+
+      <!-- MAPA FILTRADO -->
+      <section>
+        <h2>Mapa filtrado</h2>
+
+        <!-- 🔥 FILTROS EN FILA -->
+        <form id="filter-form">
+          <div class="filter-group">
+            <label>Magnitud mínima</label>
+            <input type="number" id="min-magnitude" step="0.1" />
+          </div>
+
+          <div class="filter-group">
+            <label>Magnitud máxima</label>
+            <input type="number" id="max-magnitude" step="0.1" />
+          </div>
+
+          <div class="filter-group">
+            <label>Fecha inicio</label>
+            <input type="date" id="start-date" />
+          </div>
+
+          <div class="filter-group">
+            <label>Fecha fin</label>
+            <input type="date" id="end-date" />
+          </div>
+
+          <div class="filter-group button-group">
+            <button type="submit" id="filter-btn">Filtrar</button>
+          </div>
+        </form>
+
+        <div id="filtered-map"></div>
       </section>
     </main>
-     <footer>
-      <p>&copy; 2026 Caja de Películas</p>
+
+    <footer>
+      <p>&copy; 2026 Mapa de terremotos</p>
     </footer>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
     <script src="./scripts.js"></script>
   </body>
 </html>
