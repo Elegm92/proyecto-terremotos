@@ -14,7 +14,6 @@ firebase.initializeApp(firebaseConfig);
 // Crear acceso a Firestore
 const db = firebase.firestore();
 
-
 // VARIABLES GLOBALES
 
 // Crear mapa principal
@@ -35,10 +34,7 @@ let isFiltered = false;
 // Aquí guardamos los terremotos cargados desde la API general
 let allEarthquakes = [];
 
-
-// ==============================
-// CONFIGURACIÓN DE LOS MAPAS
-// ==============================
+// Aquí la configuración para usar en los mapas
 
 // Función para crear una capa base reutilizable
 function createBaseLayer() {
@@ -49,7 +45,7 @@ function createBaseLayer() {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       subdomains: "abcd",
       maxZoom: 20,
-    }
+    },
   );
 }
 
@@ -64,16 +60,13 @@ window.addEventListener("load", () => {
   filteredMap.invalidateSize();
 });
 
-
-// ==============================
-// PETICIÓN A LA API
-// ==============================
+// Aquí hacemos la petición a la API
 
 // Esta función trae los terremotos del día desde la API de USGS
 async function getEarthquakes() {
   try {
     const response = await fetch(
-      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+      "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",
     );
 
     if (!response.ok) {
@@ -87,11 +80,6 @@ async function getEarthquakes() {
     return null;
   }
 }
-
-
-// ==============================
-// FUNCIONES AUXILIARES
-// ==============================
 
 // Según la magnitud, devolvemos un color distinto para el marcador
 function getColorByMagnitude(magnitude) {
@@ -109,19 +97,17 @@ function getColorByMagnitude(magnitude) {
 function createPopupContent(earthquake, isFavoriteView = false) {
   const properties = earthquake.properties;
 
-  const title = properties.title || "Sin título";
-  const place = properties.place || "Ubicación no disponible";
-  const date = properties.time
-    ? new Date(properties.time).toLocaleString("es-ES")
-    : "Fecha no disponible";
+  const title = properties.title;
+  const place = properties.place;
+  const date = new Date(properties.time).toLocaleDateString(); //Convierte la fecha a algo legible
   const magnitude = properties.mag ?? 0;
-  const magType = properties.magType ?? "";
-  const code = properties.code ?? "";
+  const magType = properties.magType;
+  const code = properties.code;
 
   // Saber si hay un usuario logueado
   const user = firebase.auth().currentUser;
 
-  let buttonHtml = "";
+  let buttonHtml = ""; //Variable vacia para luego añadir boton fav solo cuando logueado
 
   // Solo mostramos el botón de favoritos si:
   // - NO estamos en la vista favoritos
@@ -164,14 +150,11 @@ function createMarker(earthquake, isFavoriteView = false) {
   }).bindPopup(createPopupContent(earthquake, isFavoriteView));
 }
 
-
-// ==============================
-// DIBUJAR TERREMOTOS EN LOS MAPAS
-// ==============================
+// Pasar los datos y dibujar los mapas
 
 // Pintar terremotos en el mapa principal
 function drawAllEarthquakes(data, isFavoriteView = false) {
-  // Borrar marcadores anteriores
+  // Borrar marcadores anteriores, si no se duplican cada vez que los pintas
   allMarkersLayer.clearLayers();
 
   // Si no hay datos, no hacemos nada
@@ -227,77 +210,82 @@ function clearFilteredMap() {
   document.getElementById("filter-btn").textContent = "Filtrar";
 }
 
-
-// ==============================
-// FILTROS DEL SEGUNDO MAPA
-// ==============================
+// Hago los filtros para el segundo mapa
 
 // Escuchar el envío del formulario de filtros
-document.getElementById("filter-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
+document
+  .getElementById("filter-form")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  // Si ya estaba filtrado, al pulsar limpiamos
-  if (isFiltered) {
-    clearFilteredMap();
-    return;
-  }
-
-  // Leer valores del formulario
-  const minMagnitude = document.getElementById("min-magnitude").value;
-  const maxMagnitude = document.getElementById("max-magnitude").value;
-  const startDate = document.getElementById("start-date").value;
-  const endDate = document.getElementById("end-date").value;
-
-  // Validación de fechas
-  if (startDate && endDate && startDate > endDate) {
-    alert("La fecha de inicio no puede ser mayor que la fecha de fin.");
-    return;
-  }
-
-  // Validación de magnitudes
-  if (minMagnitude && maxMagnitude && Number(minMagnitude) > Number(maxMagnitude)) {
-    alert("La magnitud mínima no puede ser mayor que la máxima.");
-    return;
-  }
-
-  // Construir URL con filtros solo si existen valores
-  const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson${
-    minMagnitude ? `&minmagnitude=${minMagnitude}` : ""
-  }${
-    maxMagnitude ? `&maxmagnitude=${maxMagnitude}` : ""
-  }${
-    startDate ? `&starttime=${startDate}` : ""
-  }${
-    endDate ? `&endtime=${endDate}` : ""
-  }`;
-
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error("Error al obtener los terremotos filtrados");
+    // Si ya estaba filtrado, al pulsar limpiamos
+    if (isFiltered) {
+      clearFilteredMap();
+      return;
     }
 
-    const data = await response.json();
+    // Leer valores del formulario
+    const minMagnitude = document.getElementById("min-magnitude").value;
+    const maxMagnitude = document.getElementById("max-magnitude").value;
+    const startDate = document.getElementById("start-date").value;
+    const endDate = document.getElementById("end-date").value;
 
-    if (data && data.features) {
+    // Validación de fechas
+    if (startDate && endDate && startDate > endDate) {
+      alert("La fecha de inicio no puede ser mayor que la fecha de fin.");
+      return;
+    }
+
+    // Validación de magnitudes
+    if (
+      minMagnitude &&
+      maxMagnitude &&
+      Number(minMagnitude) > Number(maxMagnitude)
+    ) {
+      alert("La magnitud mínima no puede ser mayor que la máxima.");
+      return;
+    }
+
+    // Construir la URL base
+    let url = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
+
+    // Añadir filtros solo si el usuario los ha rellenado
+    if (minMagnitude) {
+      url += `&minmagnitude=${minMagnitude}`;
+    }
+
+    if (maxMagnitude) {
+      url += `&maxmagnitude=${maxMagnitude}`;
+    }
+
+    if (startDate) {
+      url += `&starttime=${startDate}`;
+    }
+
+    if (endDate) {
+      url += `&endtime=${endDate}`;
+    }
+
+    try {
+      // Pedir datos a la API con los filtros
+      const response = await fetch(url);
+
+      // Convertir la respuesta en JSON
+      const data = await response.json();
+
+      // Dibujar los terremotos filtrados en el mapa
       const hasResults = drawFilteredEarthquakes(data.features);
 
+      // Si había resultados, cambiar el estado del botón
       if (hasResults) {
         isFiltered = true;
         document.getElementById("filter-btn").textContent = "Limpiar";
       }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al cargar los datos filtrados.");
     }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Error al cargar los datos filtrados.");
-  }
-});
-
-
-// ==============================
-// BOTONES DEL MAPA PRINCIPAL
-// ==============================
+  });
 
 // Mostrar terremotos de la API
 document.getElementById("show-api").addEventListener("click", () => {
@@ -305,12 +293,11 @@ document.getElementById("show-api").addEventListener("click", () => {
 });
 
 // Mostrar favoritos del usuario
-document.getElementById("show-favorites").addEventListener("click", showFavorites);
+document
+  .getElementById("show-favorites")
+  .addEventListener("click", showFavorites);
 
-
-// ==============================
-// FIREBASE AUTH - USUARIOS
-// ==============================
+// firebase para los usuarios
 
 // Guardar datos básicos del usuario en Firestore
 function createUser(user) {
@@ -361,10 +348,7 @@ async function signOutUser() {
   }
 }
 
-
-// ==============================
-// FORMULARIOS DE REGISTRO Y LOGIN
-// ==============================
+//Aquí conecto los formularios de registro y login con Firebase
 
 // Formulario de registro
 document.getElementById("register-form").addEventListener("submit", (event) => {
@@ -372,7 +356,9 @@ document.getElementById("register-form").addEventListener("submit", (event) => {
 
   const email = document.getElementById("register-email").value;
   const password = document.getElementById("register-password").value;
-  const repeatPassword = document.getElementById("register-password-repeat").value;
+  const repeatPassword = document.getElementById(
+    "register-password-repeat",
+  ).value;
 
   // Comprobar que las contraseñas coinciden
   if (password !== repeatPassword) {
@@ -393,10 +379,7 @@ document.getElementById("login-form").addEventListener("submit", (event) => {
   signInUser(email, password);
 });
 
-
-// ==============================
 // ESTADO DEL USUARIO LOGUEADO
-// ==============================
 
 // Esta función se ejecuta cada vez que cambia el usuario autenticado
 firebase.auth().onAuthStateChanged((user) => {
@@ -409,7 +392,9 @@ firebase.auth().onAuthStateChanged((user) => {
       <button id="logout-btn">Cerrar sesión</button>
     `;
 
-    document.getElementById("logout-btn").addEventListener("click", signOutUser);
+    document
+      .getElementById("logout-btn")
+      .addEventListener("click", signOutUser);
   } else {
     userInfo.innerHTML = `
       <h3>Estado</h3>
@@ -422,10 +407,7 @@ firebase.auth().onAuthStateChanged((user) => {
   drawAllEarthquakes(allEarthquakes);
 });
 
-
-// ==============================
-// FAVORITOS EN FIRESTORE
-// ==============================
+// Funciones de firebase para favoritos de usuario
 
 // Guardar un terremoto como favorito del usuario logueado
 async function addToFavorites(earthquake) {
@@ -448,9 +430,9 @@ async function addToFavorites(earthquake) {
       earthquakeId: earthquake.id,
       title: earthquake.properties.title,
       place: earthquake.properties.place,
-      magnitude: earthquake.properties.mag ?? 0,
-      magType: earthquake.properties.magType ?? "",
-      code: earthquake.properties.code ?? "",
+      magnitude: earthquake.properties.mag,
+      magType: earthquake.properties.magType,
+      code: earthquake.properties.code,
       time: earthquake.properties.time,
       coordinates: earthquake.geometry.coordinates,
     });
@@ -520,8 +502,8 @@ async function showFavorites() {
         title: favorite.data.title,
         place: favorite.data.place,
         mag: favorite.data.magnitude,
-        magType: favorite.data.magType || "",
-        code: favorite.data.code || "",
+        magType: favorite.data.magType,
+        code: favorite.data.code,
         time: favorite.data.time,
       },
       geometry: {
@@ -535,11 +517,6 @@ async function showFavorites() {
     alert("No se pudieron cargar los favoritos.");
   }
 }
-
-
-// ==============================
-// INICIO DE LA APP
-// ==============================
 
 // Función principal para cargar terremotos al abrir la página
 async function init() {
