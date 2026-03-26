@@ -1,6 +1,4 @@
-// ======================
-// FIREBASE
-// ======================
+//Configuración del proyecto firebase con mi config
 const firebaseConfig = {
   apiKey: "AIzaSyBEAs1T0inzIB4aWDKtdR2oGOseq5TjDE0",
   authDomain: "fir-web-eb335.firebaseapp.com",
@@ -9,13 +7,12 @@ const firebaseConfig = {
   messagingSenderId: "115298909496",
   appId: "1:115298909496:web:c70439777529cfdaa9d5cd"
 };
-
+//Inicialización firebase
 firebase.initializeApp(firebaseConfig);
+// Creo una referencia a la base de datos (Firestore)
 const db = firebase.firestore();
-
-// ======================
-// MAPAS
-// ======================
+// Creo el mapa general
+// Le digo dónde se pinta ("map") y la posición inicial y el mapa filtrado
 const map = L.map("map").setView([20, 0], 2);
 const filteredMap = L.map("filtered-map").setView([20, 0], 2);
 
@@ -23,15 +20,13 @@ const filteredMap = L.map("filtered-map").setView([20, 0], 2);
 let allMarkersLayer = L.layerGroup().addTo(map);
 let filteredMarkersLayer = L.layerGroup().addTo(filteredMap);
 
-// Estado del botón de filtro
+// Estado del botón de filtro(Activo o no)
 let isFiltered = false;
 
 // Guardamos los terremotos cargados de la API general
 let allEarthquakes = [];
 
-// ======================
-// CAPA BASE
-// ======================
+
 function createBaseLayer() {
   return L.tileLayer(
     "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -43,7 +38,7 @@ function createBaseLayer() {
     }
   );
 }
-
+// Añado la capa base a ambos mapas
 createBaseLayer().addTo(map);
 createBaseLayer().addTo(filteredMap);
 
@@ -53,9 +48,7 @@ window.addEventListener("load", () => {
   filteredMap.invalidateSize();
 });
 
-// ======================
-// API TERREMOTOS
-// ======================
+//Pido los terremotos a la API
 async function getEarthquakes() {
   try {
     const response = await fetch(
@@ -73,9 +66,19 @@ async function getEarthquakes() {
   }
 }
 
-// ======================
-// FAVORITOS EN FIRESTORE
-// ======================
+function getColorByMagnitude(magnitude) {
+  if (magnitude < 1) return "#22c55e";
+  if (magnitude < 2) return "#84cc16";
+  if (magnitude < 3) return "#eab308";
+  if (magnitude < 4) return "#f59e0b";
+  if (magnitude < 5) return "#f97316";
+  if (magnitude < 6) return "#ef4444";
+  if (magnitude < 7) return "#dc2626";
+  return "#7f1d1d";
+}
+
+//Añadir terremoto a favoritos
+
 function addToFavorites(earthquake) {
   const user = firebase.auth().currentUser;
 
@@ -88,7 +91,7 @@ function addToFavorites(earthquake) {
 
   db.collection("terremotos")
     .doc(docId)
-    .set({
+    .set({//Propiedades de los terremotos del popup para luego guardarlos igual en firebase
       userId: user.uid,
       userEmail: user.email,
       earthquakeId: earthquake.id,
@@ -120,23 +123,17 @@ function addFavoriteFromPopup(earthquakeId) {
 // Necesario para usarlo desde el onclick del popup
 window.addFavoriteFromPopup = addFavoriteFromPopup;
 
-// ======================
-// ESTILOS DE TERREMOTOS
-// ======================
-function getColorByMagnitude(magnitude) {
-  if (magnitude < 1) return "#22c55e";
-  if (magnitude < 2) return "#84cc16";
-  if (magnitude < 3) return "#eab308";
-  if (magnitude < 4) return "#f59e0b";
-  if (magnitude < 5) return "#f97316";
-  if (magnitude < 6) return "#ef4444";
-  if (magnitude < 7) return "#dc2626";
-  return "#7f1d1d";
+//Sacar favoritos en pantalla al iniciar sesion
+
+async function getFavorites() {
+  const user = firebase.auth().currentUser;//User del usuario que esta logeado. Lo saca de firebase
+
+  if(!user){
+    alert("Debe iniciar sesion");
+    return [];
+  }
 }
 
-// ======================
-// POPUPS
-// ======================
 function createPopupContent(earthquake, isFavoriteView = false) {
   const properties = earthquake.properties;
 
@@ -171,9 +168,7 @@ function createPopupContent(earthquake, isFavoriteView = false) {
   `;
 }
 
-// ======================
-// MARCADORES
-// ======================
+
 function createMarker(earthquake, isFavoriteView = false) {
   const coordinates = earthquake.geometry.coordinates;
   const magnitude = earthquake.properties.mag ?? 0;
@@ -191,9 +186,7 @@ function createMarker(earthquake, isFavoriteView = false) {
   }).bindPopup(createPopupContent(earthquake, isFavoriteView));
 }
 
-// ======================
-// DIBUJAR MAPAS
-// ======================
+//Dibujar los mapas
 function drawAllEarthquakes(data) {
   allMarkersLayer.clearLayers();
 
@@ -230,9 +223,7 @@ function redrawMap() {
   }
 }
 
-// ======================
-// LIMPIAR FILTRO
-// ======================
+
 function clearFilteredMap() {
   document.getElementById("min-magnitude").value = "";
   document.getElementById("max-magnitude").value = "";
@@ -246,9 +237,7 @@ function clearFilteredMap() {
   document.getElementById("filter-btn").textContent = "Filtrar";
 }
 
-// ======================
-// CARGA INICIAL
-// ======================
+
 async function init() {
   const data = await getEarthquakes();
 
@@ -258,9 +247,7 @@ async function init() {
   }
 }
 
-// ======================
-// FILTRO DEL SEGUNDO MAPA
-// ======================
+
 document.getElementById("filter-form").addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -317,118 +304,42 @@ document.getElementById("filter-form").addEventListener("submit", async (event) 
     console.error("Error:", error);
   }
 });
+//Agregar respuesta a los botones de all y favorites
+document.getElementById("show-api").addEventListener("click", () => {
+  drawAllEarthquakes(allEarthquakes);
+});
 
-// ======================
-// AUTH FIREBASE
-// ======================
-function createUserDocument(user) {
-  const userRef = db.collection("users").doc(user.uid);
-
-  return userRef.get().then((doc) => {
-    if (!doc.exists) {
-      return userRef.set({
-        uid: user.uid,
-        email: user.email
-      });
-    }
+document.getElementById("show-favorites").addEventListener("click", showFavorites);
+//Crear usuario en la bd de firebase
+function createUser(user){
+  return db.collection("users").doc(user.uid).set({
+    uid: user.uid,
+    email: user.email
   });
 }
-
-async function signUpUser(email, password) {
-  try {
-    const userCredential = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
-
-    await createUserDocument(userCredential.user);
-
-    alert("Usuario registrado correctamente.");
-  } catch (error) {
-    console.error("Error en el registro:", error);
-    alert(error.message);
-  }
+//Funcion registro en la pagina haciendo que se guarde en bd firebase
+async function signUpUser(email,password) {
+  const userNew = await firebase.auth().createUserwithEmailAndPassword(email,password);
+  await createUser(userNew.user)
 }
 
-async function signInUser(email, password) {
-  try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
-    alert("Sesión iniciada correctamente.");
-  } catch (error) {
-    console.error("Error en el login:", error);
-    alert(error.message);
-  }
+//Loguear user
+
+async function signInUser(email,password) {
+  await firebase.auth().signInWithEmailAndPassword(email, password);
 }
+
+//Desloguear user
 
 async function signOutUser() {
-  try {
-    await firebase.auth().signOut();
-    alert("Sesión cerrada.");
-  } catch (error) {
-    console.error("Error al cerrar sesión:", error);
-    alert(error.message);
-  }
+  await firebase.aut().signOut();
 }
 
-// ======================
-// FORMULARIOS AUTH
-// ======================
-document.getElementById("register-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
+//Linkeo formularios con funciones de registro, login y demás
+//Al rellenar el formulario de registro se guarda en BD firebase o loguea sacando de ella
 
-  const email = document.getElementById("register-email").value.trim();
-  const password = document.getElementById("register-password").value.trim();
+document.getElementById("register-form").addEventListener("submit", )
 
-  if (!email || !password) {
-    alert("Completa email y contraseña.");
-    return;
-  }
 
-  await signUpUser(email, password);
-  event.target.reset();
-});
 
-document.getElementById("login-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value.trim();
-
-  if (!email || !password) {
-    alert("Completa email y contraseña.");
-    return;
-  }
-
-  await signInUser(email, password);
-  event.target.reset();
-});
-
-// ======================
-// ESTADO DE SESIÓN
-// ======================
-firebase.auth().onAuthStateChanged((user) => {
-  const userInfo = document.getElementById("user-info");
-
-  if (user) {
-    userInfo.innerHTML = `
-      <h3>Estado</h3>
-      <p>Conectado como: ${user.email}</p>
-      <button id="logout-btn" type="button">Cerrar sesión</button>
-    `;
-  } else {
-    userInfo.innerHTML = `
-      <h3>Estado</h3>
-      <p>No hay usuario conectado</p>
-      <button id="logout-btn" type="button">Cerrar sesión</button>
-    `;
-  }
-
-  document.getElementById("logout-btn").addEventListener("click", signOutUser);
-
-  // Redibujar el mapa para actualizar los popups
-  redrawMap();
-});
-
-// ======================
-// EJECUTAR
-// ======================
 init();
