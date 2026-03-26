@@ -15,9 +15,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 
-// ==============================
 // VARIABLES GLOBALES
-// ==============================
 
 // Crear mapa principal
 const map = L.map("map").setView([20, 0], 2);

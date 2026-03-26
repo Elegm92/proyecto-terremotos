@@ -4,14 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Leaflet -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <title>Mapa de terremotos</title>
+    <title>Terremotos</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="icon" type="image/x-icon" href="./assets/terremoto.png" />
   </head>
 
   <body>
@@ -20,20 +21,19 @@
     </header>
 
     <main>
-      <!-- USUARIO -->
+
       <section>
         <h2>Usuario</h2>
-
         <div>
           <h3>Registro</h3>
           <form id="register-form">
-            <label>Email</label>
+            <label for="register-email">Email</label>
             <input type="email" id="register-email" required />
 
-            <label>Contraseña</label>
+            <label for="register-password">Contraseña</label>
             <input type="password" id="register-password" required />
 
-            <label>Repetir contraseña</label>
+            <label for="register-password-repeat">Repetir contraseña</label>
             <input type="password" id="register-password-repeat" required />
 
             <button type="submit">Registrarse</button>
@@ -43,10 +43,10 @@
         <div>
           <h3>Login</h3>
           <form id="login-form">
-            <label>Email</label>
+            <label for="login-email">Email</label>
             <input type="email" id="login-email" required />
 
-            <label>Contraseña</label>
+            <label for="login-password">Contraseña</label>
             <input type="password" id="login-password" required />
 
             <button type="submit">Iniciar sesión</button>
@@ -59,46 +59,45 @@
         </div>
       </section>
 
-      <!-- BOTONES -->
-      <section>
+      <!-- Añado botones para mostrar todos o favoritos-->
+      <section class="options">
         <h2>Opciones</h2>
         <button id="show-api">Mostrar terremotos</button>
         <button id="show-favorites">Mostrar favoritos</button>
       </section>
 
-      <!-- MAPA GENERAL -->
+      <!-- Aquí mapa general -->
       <section>
         <h2>Mapa general</h2>
         <div id="map"></div>
       </section>
 
-      <!-- MAPA FILTRADO -->
+      <!-- Aquí mapa filtrado -->
       <section>
         <h2>Mapa filtrado</h2>
 
-        <!-- 🔥 FILTROS EN FILA -->
         <form id="filter-form">
           <div class="filter-group">
-            <label>Magnitud mínima</label>
-            <input type="number" id="min-magnitude" step="0.1" />
+            <label for="min-magnitude">Magnitud mínima</label>
+            <input type="number" id="min-magnitude" min="0" step="0.1" />
           </div>
 
           <div class="filter-group">
-            <label>Magnitud máxima</label>
-            <input type="number" id="max-magnitude" step="0.1" />
+            <label for="max-magnitude">Magnitud máxima</label>
+            <input type="number" id="max-magnitude" min="0" step="0.1" />
           </div>
 
           <div class="filter-group">
-            <label>Fecha inicio</label>
+            <label for="start-date">Fecha inicio</label>
             <input type="date" id="start-date" />
           </div>
 
           <div class="filter-group">
-            <label>Fecha fin</label>
+            <label for="end-date">Fecha fin</label>
             <input type="date" id="end-date" />
           </div>
 
-          <div class="filter-group button-group">
+          <div class="button-group">
             <button type="submit" id="filter-btn">Filtrar</button>
           </div>
         </form>
@@ -108,13 +107,10 @@
     </main>
 
     <footer>
-      <p>&copy; 2026 Mapa de terremotos</p>
+      <p>&copy; 2026 Caja de Películas</p>
     </footer>
 
-    <!-- Leaflet -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Firebase -->
+    <!-- FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
