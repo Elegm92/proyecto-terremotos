@@ -126,7 +126,7 @@ Sigue estos pasos para obtener una copia del proyecto y ejecutarlo en tu ordenad
 Abre una terminal y ejecuta:
 
 ```bash
-git clone 
+git clone https://github.com/Elegm92/proyecto-terremotos.git
 ```
 
 Después entra en la carpeta del proyecto:
@@ -138,7 +138,7 @@ cd landin_terremotos
 ## Cómo ejecutar el proyecto
 
 1. Descarga o clona el repositorio.
-2. Abre la pagina con ().
+2. Abre la pagina con (https://github.com/Elegm92/proyecto-terremotos.git).
 3. Abre el archivo **index.html** en tu navegador.
 4. Navega por las diferentes secciones de la página.
 
